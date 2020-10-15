@@ -2,12 +2,30 @@
   <div class="main__list-wrapper">
     <h2 class="main__list-caption">Todos List</h2>
     <div class="main__from-wrapper">
-      <form class="main__form">
-        <input
-          class="main__form-input"
-          type="text"
-          placeholder="Write to create new Task"
-        />
+      <!-- {{ task }} -->
+      <form class="main__form" @submit.prevent="saveNewItem">
+        <div class="main__form-label-wrapper">
+          <label class="main__form-label" for="task-text">Text:</label>
+          <input
+            class="main__form-input"
+            type="text"
+            id="task-text"
+            v-model="task.text"
+            placeholder="Write a text for your new task"
+          />
+        </div>
+        <div class="main__form-label-wrapper">
+          <label class="main__form-label" for="task-description"
+            >Description:</label
+          >
+          <input
+            class="main__form-input"
+            type="desctiption"
+            id="task-description"
+            v-model="task.description"
+            placeholder="Write here your description"
+          />
+        </div>
         <button class="main__form-button" type="submit">create</button>
       </form>
     </div>
@@ -23,6 +41,9 @@ import TodoItem from '../todo/todo-item';
 import { Tasks } from '../../../api/tasks';
 
 export default {
+  data() {
+    return { task: {} };
+  },
   components: {
     TodoItem,
   },
@@ -57,6 +78,7 @@ ul {
 }
 
 .main__from-wrapper {
+  position: relative;
   padding: 10px 30px;
   margin-bottom: 20px;
 
@@ -64,13 +86,24 @@ ul {
 }
 
 .main__form {
-  position: relative;
+  // position: relative;
+  display: flex;
+  flex-direction: column;
   width: 100%;
+}
+
+.main__form-label-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.main__form-label {
+  width: 90px;
 }
 
 .main__form-input {
   box-sizing: border-box;
-  width: 70%;
+  width: 50%;
   height: 30px;
   outline: none;
   border: none;
@@ -86,8 +119,8 @@ ul {
   box-sizing: border-box;
 
   padding: 2px 10px;
-  right: 15%;
-  top: 10px;
+  right: 20%;
+  bottom: -20px;
 
   font-size: 15px;
 
@@ -108,10 +141,8 @@ ul {
 
 .main__list-wrapper {
   box-sizing: border-box;
-  /* padding: 50px 30px; */
 
   width: 600px;
-  height: 300px;
 
   background: white;
   border-radius: 5px;
