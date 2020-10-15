@@ -1,19 +1,17 @@
 <template>
-  <main class="html-wrapper main">
+  <div class="body-wrapper html-wrapper">
     <h1 class="main__caption visually-hidden">Welcome to the Time Tracker</h1>
-    <TodosList />
-  </main>
+    <main class="main">
+      <h1 class="main__caption visually-hidden">Welcome to the Time Tracker</h1>
+      <TodosList />
+    </main>
+  </div>
 </template>
 
 <script>
 import TodosList from './components/todos-list/todos-list';
-import { Tasks } from '../api/tasks';
-
 export default {
   name: 'app',
-  data() {
-    return Tasks.find({});
-  },
   components: {
     TodosList,
   },
@@ -22,7 +20,8 @@ export default {
 
 <style scoped>
 .html-wrapper {
-  margin: 20% auto;
+  display: flex;
+  justify-content: center;
 }
 
 p {
