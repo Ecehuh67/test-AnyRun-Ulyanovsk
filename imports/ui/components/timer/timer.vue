@@ -11,7 +11,7 @@
         {{ this.renewTimer.seconds || '00' }}
       </li>
     </ul>
-    <div class="timer-button__wrapper">
+    <div class="timer-button__wrapper" v-if="!this.task.isDone">
       <button
         class="timer__button"
         type="button"
