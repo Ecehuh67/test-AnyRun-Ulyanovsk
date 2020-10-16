@@ -40,6 +40,8 @@ import { getValue } from '../../../utils/timer';
 
 export default {
   props: ['task'],
+
+  // Create a local variable to use inside a Vue component
   data() {
     return {
       time: {
@@ -52,10 +54,12 @@ export default {
       },
     };
   },
+  // This method allows to watch for changing values to rerender
   computed: {
     isTracked() {
       return !!this.time.isTracked;
     },
+    // Convert duration into correct format for a timer-list
     renewTimer() {
       const time = getValue(this.time.duration);
       this.time.currentTime = time;
@@ -67,37 +71,48 @@ export default {
       this.updateTimer();
 
       const date = new Date();
+
+      // Update the collection to show a timer has been started
       Tasks.update(this.taskItem._id, {
         ...this.task,
         initialTime: [date],
-        isTracked: !this.isTracked,
+        isTracked: true,
       });
-      this.time.isTracked = !this.time.isTracked;
+
+      // Update the local variable to save current value of having been started
+      this.time.isTracked = true;
     },
     pauseTime() {
       const newTime = Math.floor(
         (new Date() - this.taskItem.initialTime[0]) / 1000
       );
 
+      // Stop circle of updating a timer
       window.clearInterval(this.time.timer);
-      this.time.isTracked = !this.time.isTracked;
+      this.time.isTracked = false;
 
+      // Update the collection to show a timer has been paused
       Tasks.update(this.taskItem._id, {
         ...this.task,
         duration: this.taskItem.duration + newTime,
-        isTracked: !this.isTracked,
+        isTracked: false,
       });
     },
     resetTimer() {
+      // Stop circle of updating a timer
       window.clearInterval(this.time.timer);
+
+      // Return the local variable back into an initial state
       this.time = {
         initialTime: [],
         doneTime: [],
         timer: null,
         currentTime: {},
         duration: 0,
+        isTracked: false,
       };
 
+      // Return the server task back into an initial state
       Tasks.update(this.taskItem._id, {
         ...this.task,
         isTracked: false,
@@ -105,6 +120,8 @@ export default {
         duration: 0,
       });
     },
+
+    // Renew each second our timer on 1 sec
     updateTimer() {
       this.time.duration = this.taskItem.duration;
       const timer = window.setInterval(() => {
@@ -112,12 +129,15 @@ export default {
       }, 1000);
       this.time.timer = timer;
     },
+
+    // After the application was closed or page was refreshed recovers a timer
     initialUpdate() {
       let timer = null;
       const date = new Date();
       if (!this.taskItem.isTracked) {
         this.time.duration = this.taskItem.duration;
       } else {
+        this.time.isTracked = this.taskItem.isTracked;
         this.time.duration =
           this.taskItem.duration +
           Math.floor((date - this.taskItem.initialTime[0]) / 1000);

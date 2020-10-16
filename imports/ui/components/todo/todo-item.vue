@@ -6,6 +6,7 @@
         class="task-list__item-checkbox"
         type="checkbox"
         v-on:change="compliteTask"
+        :checked="this.task.isDone"
       />
       <span class="task-list__text">{{ task.text }}</span>
 
@@ -32,14 +33,13 @@ export default {
   },
   methods: {
     compliteTask() {
-      // const currentTask = getTaskId(this.task);
       Tasks.update(this.taskItem._id, {
         ...this.task,
         isDone: !this.task.isDone,
       });
+      this.task.isDone = true;
     },
     deleteTask() {
-      // const currentTask = getTaskId(this.task);
       Tasks.remove(this.taskItem._id);
     },
   },

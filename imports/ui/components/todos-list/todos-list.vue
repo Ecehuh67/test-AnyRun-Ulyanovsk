@@ -70,7 +70,7 @@ export default {
   },
   meteor: {
     tasks() {
-      return Tasks.find({}).fetch();
+      return Tasks.find({}, { sort: { isDone: false } }).fetch();
     },
   },
 };
