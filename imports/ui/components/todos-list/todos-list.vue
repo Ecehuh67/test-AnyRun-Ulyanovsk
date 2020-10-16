@@ -2,7 +2,6 @@
   <div class="main__list-wrapper">
     <h2 class="main__list-caption">Todos List</h2>
     <div class="main__from-wrapper">
-      <!-- {{ task }} -->
       <form class="main__form" @submit.prevent="saveNewItem">
         <div class="main__form-label-wrapper">
           <label class="main__form-label" for="task-text">Text:</label>
@@ -30,8 +29,9 @@
       </form>
     </div>
 
+    <!-- <p v-if="checkTasks">There is no tasks to do!</p> -->
     <ul class="main__task-list task-list">
-      <TodoItem v-for="(task, idx) in tasks" v-bind:task="task" :key="idx" />
+      <TodoItem v-for="(task, idx) of tasks" v-bind:task="task" :key="idx" />
     </ul>
   </div>
 </template>
@@ -46,6 +46,22 @@ export default {
   },
   components: {
     TodoItem,
+  },
+  methods: {
+    saveNewItem() {
+      const newTask = {
+        ...this.task,
+        isDone: false,
+      };
+      Tasks.insert(newTask);
+      this.task = {
+        text: '',
+        description: '',
+      };
+    },
+    checkTasks() {
+      console.log(Tasks.find());
+    },
   },
   meteor: {
     tasks() {

@@ -1,11 +1,17 @@
 <template>
   <div>
-    <li class="task-list__item">
-      <input class="task-list__item-checkbox" type="checkbox" />
-      <p class="task-list__text">{{ task.text }}</p>
+    <!-- {{ task }} -->
+    <li class="task-list__item" v-bind:class="{ done: this.task.isDone }">
+      <input
+        class="task-list__item-checkbox"
+        type="checkbox"
+        v-on:change="compliteTask"
+      />
+      <span class="task-list__text">{{ task.text }}</span>
       <button
         class="task-list__item-button task-list__button--delete"
         type="click"
+        v-on:click="deleteTask"
       >
         &times;
       </button>
@@ -14,8 +20,19 @@
 </template>
 
 <script>
+import { Tasks, getTaskId } from '../../../api/tasks';
 export default {
   props: ['task'],
+  methods: {
+    compliteTask() {
+      const currentTask = getTaskId(this.task);
+      Tasks.update(currentTask, { ...this.task, isDone: !this.task.isDone });
+    },
+    deleteTask() {
+      const currentTask = getTaskId(this.task);
+      Tasks.remove(currentTask);
+    },
+  },
 };
 </script>
 
@@ -52,7 +69,7 @@ p {
   }
 }
 
-.task-list__text--checked {
+.done {
   text-decoration: line-through;
 }
 
