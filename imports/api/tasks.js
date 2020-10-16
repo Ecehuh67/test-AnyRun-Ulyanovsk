@@ -4,6 +4,6 @@ export const Tasks = new Mongo.Collection('tasks');
 
 // Tasks.remove({});
 
-export const getTaskId = (task) => {
-  return Tasks.find(task._id).fetch()[0]._id;
+export const getTask = (task) => {
+  return Tasks.find(task._id).fetch()[0];
 };

@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ task }}
     <li class="task-list__item" v-bind:class="{ done: this.task.isDone }">
       <input
         class="task-list__item-checkbox"
@@ -7,6 +8,9 @@
         v-on:change="compliteTask"
       />
       <span class="task-list__text">{{ task.text }}</span>
+
+      <Timer v-bind:task="task" />
+
       <button
         class="task-list__item-button task-list__button--delete"
         type="click"
@@ -19,17 +23,29 @@
 </template>
 
 <script>
-import { Tasks, getTaskId } from '../../../api/tasks';
+import { Tasks } from '../../../api/tasks';
+import Timer from '../timer/timer';
 export default {
   props: ['task'],
+  components: {
+    Timer,
+  },
   methods: {
     compliteTask() {
-      const currentTask = getTaskId(this.task);
-      Tasks.update(currentTask, { ...this.task, isDone: !this.task.isDone });
+      // const currentTask = getTaskId(this.task);
+      Tasks.update(this.taskItem._id, {
+        ...this.task,
+        isDone: !this.task.isDone,
+      });
     },
     deleteTask() {
-      const currentTask = getTaskId(this.task);
-      Tasks.remove(currentTask);
+      // const currentTask = getTaskId(this.task);
+      Tasks.remove(this.taskItem._id);
+    },
+  },
+  meteor: {
+    taskItem() {
+      return Tasks.find(this.task._id).fetch()[0];
     },
   },
 };

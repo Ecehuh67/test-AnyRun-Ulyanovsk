@@ -42,7 +42,7 @@ import { Tasks } from '../../../api/tasks';
 
 export default {
   data() {
-    return { task: {}, collection: Tasks.find({}).fetch() };
+    return { task: {} };
   },
   components: {
     TodoItem,
@@ -57,6 +57,9 @@ export default {
       const newTask = {
         ...this.task,
         isDone: false,
+        isTracked: false,
+        initialTime: [],
+        duration: 0,
       };
       Tasks.insert(newTask);
       this.task = {
