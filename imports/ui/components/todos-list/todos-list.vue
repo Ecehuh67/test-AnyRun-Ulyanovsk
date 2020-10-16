@@ -1,6 +1,8 @@
 <template>
   <div class="main__list-wrapper">
-    <h2 class="main__list-caption">Todos List</h2>
+    <h2 class="main__list-caption">
+      Todos List ({{ this.notCompleted.length }})
+    </h2>
     <div class="main__from-wrapper">
       <form class="main__form" @submit.prevent="saveNewItem">
         <div class="main__form-label-wrapper">
@@ -72,6 +74,9 @@ export default {
     // Get tasks from MOngo db and sort them
     tasks() {
       return Tasks.find({}, { sort: { isDone: false } }).fetch();
+    },
+    notCompleted() {
+      return Tasks.find({ isDone: false }).fetch();
     },
   },
 };
