@@ -69,6 +69,7 @@ export default {
     },
   },
   meteor: {
+    // Get tasks from MOngo db and sort them
     tasks() {
       return Tasks.find({}, { sort: { isDone: false } }).fetch();
     },

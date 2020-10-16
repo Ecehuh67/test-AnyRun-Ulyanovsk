@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- {{ task }} -->
     <li class="task-list__item" v-bind:class="{ done: this.task.isDone }">
       <input
         class="task-list__item-checkbox"
@@ -8,7 +7,12 @@
         v-on:change="compliteTask"
         :checked="this.task.isDone"
       />
-      <span class="task-list__text">{{ task.text }}</span>
+      <div class="task-list__item-wrapper">
+        <span class="task-list__text">{{ task.text }}</span>
+        <span class="task-list__description" v-if="!!this.task.description">{{
+          task.description
+        }}</span>
+      </div>
 
       <Timer v-bind:task="task" />
 
@@ -43,6 +47,8 @@ export default {
       Tasks.remove(this.taskItem._id);
     },
   },
+
+  // Get access to tasks from Mondo db
   meteor: {
     taskItem() {
       return Tasks.find(this.task._id).fetch()[0];
@@ -64,7 +70,7 @@ p {
 }
 
 .task-list__item-checkbox {
-  margin-right: 5px;
+  margin-right: 10px;
 }
 
 .task-list__item {
@@ -84,12 +90,25 @@ p {
   }
 }
 
-.task-list__text {
-  max-width: 300px;
-}
-
 .done {
   text-decoration: line-through;
+}
+
+.task-list__item-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  max-width: 350px;
+  min-height: 50px;
+}
+
+.task-list__text {
+  font-weight: 600;
+}
+
+.task-list__description {
+  margin-top: 10px;
 }
 
 .task-list__item-button {
@@ -98,7 +117,7 @@ p {
   justify-content: center;
   align-items: center;
   right: 10px;
-  top: 12px;
+  top: 10px;
 
   width: 20px;
   height: 20px;

@@ -11,26 +11,28 @@
         {{ this.renewTimer.seconds || '00' }}
       </li>
     </ul>
-    <button
-      class="timer__button"
-      type="button"
-      v-on:click="startTrackTask"
-      v-if="!isTracked"
-    >
-      {{ this.time.currentTime.seconds === '00' ? 'Start' : 'Renew' }}
-    </button>
+    <div class="timer-button__wrapper">
+      <button
+        class="timer__button"
+        type="button"
+        v-on:click="startTrackTask"
+        v-if="!isTracked"
+      >
+        {{ this.time.currentTime.seconds === '00' ? 'Start' : 'Renew' }}
+      </button>
 
-    <button class="timer__button" type="button" v-on:click="pauseTime" v-else>
-      Pause
-    </button>
-    <button
-      class="timer__button timer__button--reset"
-      type="button"
-      :disabled="this.time.duration === 0"
-      v-on:click="resetTimer"
-    >
-      Reset
-    </button>
+      <button class="timer__button" type="button" v-on:click="pauseTime" v-else>
+        Pause
+      </button>
+      <button
+        class="timer__button timer__button--reset"
+        type="button"
+        :disabled="this.time.duration === 0"
+        v-on:click="resetTimer"
+      >
+        Reset
+      </button>
+    </div>
   </div>
 </template>
 
@@ -166,12 +168,13 @@ export default {
 .timer-wrapper {
   position: absolute;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  flex-direction: column;
 
   top: 12px;
   right: 50px;
 
-  width: 160px;
+  width: 110px;
 }
 
 .timer {
@@ -181,12 +184,19 @@ export default {
 
   margin: 0;
   padding: 0;
-
-  width: 70px;
+  margin-bottom: 5px;
 
   font-size: 10px;
 
   list-style: none;
+}
+
+.timer-button__wrapper {
+  display: flex;
+  justify-content: space-between;
+  box-sizing: border-box;
+
+  padding: 0 5px;
 }
 
 .timer__item {
@@ -206,6 +216,8 @@ export default {
 }
 
 .timer__button {
+  // width: 20px;
+
   font-size: 10px;
 }
 </style>
