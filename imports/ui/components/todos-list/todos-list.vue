@@ -29,10 +29,10 @@
       </form>
     </div>
 
-    <!-- <p v-if="checkTasks">There is no tasks to do!</p> -->
-    <ul class="main__task-list task-list">
+    <ul class="main__task-list task-list" v-if="noTasks">
       <TodoItem v-for="(task, idx) of tasks" v-bind:task="task" :key="idx" />
     </ul>
+    <p v-else class="task-list__caption">There is no any tasks to do!</p>
   </div>
 </template>
 
@@ -42,10 +42,15 @@ import { Tasks } from '../../../api/tasks';
 
 export default {
   data() {
-    return { task: {} };
+    return { task: {}, collection: Tasks.find({}).fetch() };
   },
   components: {
     TodoItem,
+  },
+  computed: {
+    noTasks() {
+      return !!this.tasks.length;
+    },
   },
   methods: {
     saveNewItem() {
@@ -58,9 +63,6 @@ export default {
         text: '',
         description: '',
       };
-    },
-    checkTasks() {
-      console.log(Tasks.find());
     },
   },
   meteor: {
@@ -163,5 +165,13 @@ ul {
   background: white;
   border-radius: 5px;
   box-shadow: 10px 10px 5px 0px rgba(0, 0, 0, 0.75);
+}
+
+.task-list__caption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 90px;
 }
 </style>

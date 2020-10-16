@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- {{ task }} -->
     <li class="task-list__item" v-bind:class="{ done: this.task.isDone }">
       <input
         class="task-list__item-checkbox"
