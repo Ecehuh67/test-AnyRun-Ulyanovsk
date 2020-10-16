@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ task }}
+    <!-- {{ task }} -->
     <li class="task-list__item" v-bind:class="{ done: this.task.isDone }">
       <input
         class="task-list__item-checkbox"
@@ -84,6 +84,10 @@ p {
   }
 }
 
+.task-list__text {
+  max-width: 300px;
+}
+
 .done {
   text-decoration: line-through;
 }
@@ -94,7 +98,7 @@ p {
   justify-content: center;
   align-items: center;
   right: 10px;
-  top: 30%;
+  top: 12px;
 
   width: 20px;
   height: 20px;

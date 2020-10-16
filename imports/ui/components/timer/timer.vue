@@ -17,15 +17,17 @@
       v-on:click="startTrackTask"
       v-if="!isTracked"
     >
-      Start
+      {{ this.time.currentTime.seconds === '00' ? 'Start' : 'Renew' }}
     </button>
+
     <button class="timer__button" type="button" v-on:click="pauseTime" v-else>
       Pause
     </button>
     <button
       class="timer__button timer__button--reset"
       type="button"
-      disabled="disabled"
+      :disabled="this.time.duration === 0"
+      v-on:click="resetTimer"
     >
       Reset
     </button>
@@ -46,12 +48,13 @@ export default {
         timer: null,
         currentTime: {},
         duration: 0,
+        isTracked: false,
       },
     };
   },
   computed: {
     isTracked() {
-      return !!this.taskItem.isTracked;
+      return !!this.time.isTracked;
     },
     renewTimer() {
       const time = getValue(this.time.duration);
@@ -69,6 +72,7 @@ export default {
         initialTime: [date],
         isTracked: !this.isTracked,
       });
+      this.time.isTracked = !this.time.isTracked;
     },
     pauseTime() {
       const newTime = Math.floor(
@@ -76,11 +80,29 @@ export default {
       );
 
       window.clearInterval(this.time.timer);
+      this.time.isTracked = !this.time.isTracked;
 
       Tasks.update(this.taskItem._id, {
         ...this.task,
         duration: this.taskItem.duration + newTime,
         isTracked: !this.isTracked,
+      });
+    },
+    resetTimer() {
+      window.clearInterval(this.time.timer);
+      this.time = {
+        initialTime: [],
+        doneTime: [],
+        timer: null,
+        currentTime: {},
+        duration: 0,
+      };
+
+      Tasks.update(this.taskItem._id, {
+        ...this.task,
+        isTracked: false,
+        initialTime: [],
+        duration: 0,
       });
     },
     updateTimer() {
