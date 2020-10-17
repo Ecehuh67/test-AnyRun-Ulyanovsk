@@ -34,6 +34,11 @@
 
     <ul class="main__task-list task-list" v-if="noTasks">
       <TodoItem v-for="(task, idx) of tasks" v-bind:task="task" :key="idx" />
+      <TodoItem
+        v-for="(task, idx) of completedTasks"
+        v-bind:task="task"
+        :key="task + idx"
+      />
     </ul>
     <p v-else class="task-list__caption">There is no any tasks to do!</p>
   </div>
@@ -41,7 +46,8 @@
 
 <script>
 import TodoItem from '../todo/todo-item';
-import { Tasks } from '../../../api/tasks';
+import { Meteor } from 'meteor/meteor';
+import { Tasks, checkError } from '../../../api/tasks';
 
 export default {
   data() {
@@ -52,7 +58,7 @@ export default {
   },
   computed: {
     noTasks() {
-      return !!this.tasks.length;
+      return !!(this.tasks.length + this.completedTasks.length);
     },
   },
   methods: {
@@ -64,7 +70,9 @@ export default {
         initialTime: [],
         duration: 0,
       };
-      Tasks.insert(newTask);
+
+      Meteor.call('createTask', newTask, checkError);
+
       this.task = {
         text: '',
         description: '',
@@ -72,10 +80,14 @@ export default {
     },
   },
   meteor: {
-    // Get tasks from MOngo db and sort them
+    // Get tasks from Mongo db and sort them
     tasks() {
-      return Tasks.find({}, { sort: { isDone: false } }).fetch();
+      return Tasks.find({ isDone: false }).fetch();
     },
+    completedTasks() {
+      return Tasks.find({ isDone: true }, { sort: { doneTime: -1 } }).fetch();
+    },
+
     notCompleted() {
       return Tasks.find({ isDone: false }).fetch();
     },
