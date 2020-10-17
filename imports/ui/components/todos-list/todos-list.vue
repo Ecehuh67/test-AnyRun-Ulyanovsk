@@ -41,7 +41,8 @@
 
 <script>
 import TodoItem from '../todo/todo-item';
-import { Tasks } from '../../../api/tasks';
+import { Meteor } from 'meteor/meteor';
+import { Tasks, checkError } from '../../../api/tasks';
 
 export default {
   data() {
@@ -64,7 +65,9 @@ export default {
         initialTime: [],
         duration: 0,
       };
-      Tasks.insert(newTask);
+
+      Meteor.call('createTask', newTask, checkError);
+
       this.task = {
         text: '',
         description: '',
@@ -72,7 +75,7 @@ export default {
     },
   },
   meteor: {
-    // Get tasks from MOngo db and sort them
+    // Get tasks from Mongo db and sort them
     tasks() {
       return Tasks.find({}, { sort: { isDone: false } }).fetch();
     },

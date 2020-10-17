@@ -18,7 +18,7 @@
         v-on:click="startTrackTask"
         v-if="!isTracked"
       >
-        {{ this.time.currentTime.seconds === '00' ? 'Start' : 'Renew' }}
+        {{ this.task.duration === 0 ? 'Start' : 'Renew' }}
       </button>
 
       <button class="timer__button" type="button" v-on:click="pauseTime" v-else>
@@ -27,7 +27,7 @@
       <button
         class="timer__button timer__button--reset"
         type="button"
-        :disabled="this.time.duration === 0"
+        :disabled="this.task.duration === 0"
         v-on:click="resetTimer"
       >
         Reset
@@ -37,123 +37,92 @@
 </template>
 
 <script>
-import { Tasks } from '../../../api/tasks';
+import { Meteor } from 'meteor/meteor';
+import { Tasks, updateTask, checkError } from '../../../api/tasks';
 import { getValue } from '../../../utils/timer';
 
 export default {
   props: ['task'],
-
-  // Create a local variable to use inside a Vue component
-  data() {
-    return {
-      time: {
-        initialTime: [],
-        timer: null,
-        currentTime: {},
-        duration: 0,
-        isTracked: false,
-      },
-    };
-  },
   // This method allows to watch for changing values to rerender
   computed: {
     isTracked() {
-      return !!this.time.isTracked;
+      return !!this.task.isTracked;
     },
     // Convert duration into correct format for a timer-list
     renewTimer() {
-      const time = getValue(this.time.duration);
-      this.time.currentTime = time;
-      return this.time.currentTime;
+      const time = getValue(this.task.duration);
+      return time;
     },
   },
   methods: {
     startTrackTask() {
-      this.updateTimer();
-
       // Update the collection to show a timer has been started
-      Tasks.update(this.taskItem._id, {
-        ...this.task,
-        initialTime: [new Date()],
-        isTracked: true,
-      });
+      const timer = Meteor.setInterval(() => {
+        this.task.duration += 1;
+
+        Meteor.call(
+          'updateTask',
+          this.task._id,
+          {
+            ...this.task,
+            initialTime:
+              this.task.initialTime.length > 0
+                ? this.task.initialTime
+                : [new Date()],
+            isTracked: true,
+            timer,
+          },
+          checkError
+        );
+      }, 1000);
 
       // Update the local variable to save current value of having been started
-      this.time.isTracked = true;
     },
     pauseTime() {
-      const newTime = Math.floor(
-        (new Date() - this.taskItem.initialTime[0]) / 1000
-      );
-
       // Stop circle of updating a timer
-      window.clearInterval(this.time.timer);
-      this.time.isTracked = false;
+      Meteor.clearInterval(this.task.timer);
 
       // Update the collection to show a timer has been paused
-      Tasks.update(this.taskItem._id, {
-        ...this.task,
-        duration: this.taskItem.duration + newTime,
-        isTracked: false,
-      });
+      Meteor.call(
+        'updateTask',
+        this.task._id,
+        {
+          ...this.task,
+          // duration: newTime,
+          isTracked: false,
+          timer: null,
+        },
+        checkError
+      );
     },
     resetTimer() {
-      // Stop circle of updating a timer
-      window.clearInterval(this.time.timer);
-
-      // Return the local variable back into an initial state
-      this.time = {
-        initialTime: [],
-        timer: null,
-        currentTime: {},
-        duration: 0,
-        isTracked: false,
-      };
+      Meteor.clearInterval(this.task.timer);
 
       // Return the server task back into an initial state
-      Tasks.update(this.taskItem._id, {
-        ...this.task,
-        isTracked: false,
-        initialTime: [],
-        duration: 0,
-      });
-    },
-
-    // Renew each second our timer on 1 sec
-    updateTimer() {
-      this.time.duration = this.taskItem.duration;
-      const timer = window.setInterval(() => {
-        this.time.duration += 1;
-      }, 1000);
-      this.time.timer = timer;
+      Meteor.call(
+        'updateTask',
+        this.task._id,
+        {
+          ...this.task,
+          isTracked: false,
+          initialTime: [],
+          duration: 0,
+          timer: null,
+        },
+        checkError
+      );
     },
 
     // After the application was closed or page was refreshed recovers a timer
     initialUpdate() {
-      const date = new Date();
-      if (!this.taskItem.isTracked) {
-        this.time.duration = this.taskItem.duration;
-      } else {
-        this.time.isTracked = this.taskItem.isTracked;
-        this.time.duration =
-          this.taskItem.duration +
-          Math.floor((date - this.taskItem.initialTime[0]) / 1000);
-        this.time.timer = window.setInterval(() => {
-          this.time.duration += 1;
-        }, 1000);
+      if (this.task.isTracked) {
+        this.pauseTime();
+        this.startTrackTask();
       }
     },
   },
-  mounted() {
+  created() {
     this.initialUpdate();
-  },
-  meteor: {
-    tasks() {
-      return Tasks.find({}).fetch();
-    },
-    taskItem() {
-      return Tasks.find(this.task._id).fetch()[0];
-    },
   },
 };
 </script>
