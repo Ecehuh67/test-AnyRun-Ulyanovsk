@@ -13,6 +13,7 @@
             id="task-text"
             v-model="task.text"
             placeholder="Write a text for your new task"
+            required
           />
         </div>
         <div class="main__form-label-wrapper">

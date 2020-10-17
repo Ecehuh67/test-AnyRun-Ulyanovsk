@@ -48,7 +48,6 @@ export default {
     return {
       time: {
         initialTime: [],
-        doneTime: [],
         timer: null,
         currentTime: {},
         duration: 0,
@@ -72,12 +71,10 @@ export default {
     startTrackTask() {
       this.updateTimer();
 
-      const date = new Date();
-
       // Update the collection to show a timer has been started
       Tasks.update(this.taskItem._id, {
         ...this.task,
-        initialTime: [date],
+        initialTime: [new Date()],
         isTracked: true,
       });
 
@@ -107,7 +104,6 @@ export default {
       // Return the local variable back into an initial state
       this.time = {
         initialTime: [],
-        doneTime: [],
         timer: null,
         currentTime: {},
         duration: 0,
@@ -134,7 +130,6 @@ export default {
 
     // After the application was closed or page was refreshed recovers a timer
     initialUpdate() {
-      let timer = null;
       const date = new Date();
       if (!this.taskItem.isTracked) {
         this.time.duration = this.taskItem.duration;
@@ -143,10 +138,9 @@ export default {
         this.time.duration =
           this.taskItem.duration +
           Math.floor((date - this.taskItem.initialTime[0]) / 1000);
-        timer = window.setInterval(() => {
+        this.time.timer = window.setInterval(() => {
           this.time.duration += 1;
         }, 1000);
-        this.time.timer = timer;
       }
     },
   },
