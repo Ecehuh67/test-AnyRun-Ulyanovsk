@@ -5,8 +5,9 @@
         class="task-list__item-checkbox"
         type="checkbox"
         v-on:change="compliteTask"
-        :checked="isCompleted"
+        :checked="!!this.task.isDone"
       />
+      {{ this.task.isDone }}
       <div class="task-list__item-wrapper">
         <span class="task-list__text">{{ this.task.text }}</span>
         <span class="task-list__description" v-if="!!this.task.description">{{
@@ -44,7 +45,7 @@ export default {
   },
   computed: {
     isCompleted() {
-      return this.taskItem.isDone;
+      return this.task.isDone;
     },
   },
   methods: {
@@ -52,10 +53,11 @@ export default {
       this.onChange();
       Meteor.call(
         'completeTask',
-        this.taskItem._id,
+        this.task._id,
         {
           ...this.task,
           isDone: !this.task.isDone,
+          doneTime: new Date(),
           isTracked: false,
           timer: null,
         },

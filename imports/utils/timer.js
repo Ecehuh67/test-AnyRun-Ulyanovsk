@@ -11,7 +11,7 @@ const convertFormat = (obj) => {
 export const getValue = (value) => {
   const hours = Math.floor(value / 3600);
   const minutes = Math.floor((value - hours * 3600) / 60);
-  const seconds = Math.round(value - hours * 3600 - minutes * 60);
+  const seconds = Math.floor(value - hours * 3600 - minutes * 60);
 
   const time = convertFormat({ hours, minutes, seconds });
 
