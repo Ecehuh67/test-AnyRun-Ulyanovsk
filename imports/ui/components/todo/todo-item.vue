@@ -5,9 +5,8 @@
         class="task-list__item-checkbox"
         type="checkbox"
         v-on:change="compliteTask"
-        :checked="!!this.task.isDone"
+        :checked="isCompleted"
       />
-      {{ this.task.isDone }}
       <div class="task-list__item-wrapper">
         <span class="task-list__text">{{ this.task.text }}</span>
         <span class="task-list__description" v-if="!!this.task.description">{{
@@ -56,18 +55,18 @@ export default {
         this.task._id,
         {
           ...this.task,
-          isDone: !this.task.isDone,
+          isDone: !this.taskItem.isDone,
           doneTime: new Date(),
           isTracked: false,
           timer: null,
         },
         checkError
       );
-      this.task.isDone = true;
+      this.task.isDone = !this.taskItem.isDone;
     },
     deleteTask() {
       this.onChange();
-      Meteor.call('removeTask', this.taskItem._id, checkError);
+      Meteor.call('removeTask', this.task._id, checkError);
     },
     onChange() {
       Meteor.clearInterval(this.task.timer);
@@ -125,7 +124,7 @@ p {
   flex-direction: column;
   justify-content: center;
 
-  max-width: 350px;
+  max-width: 300px;
   min-height: 50px;
 }
 

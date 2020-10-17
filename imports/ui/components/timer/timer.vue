@@ -65,10 +65,7 @@ export default {
           this.task._id,
           {
             ...this.task,
-            initialTime:
-              this.task.initialTime.length > 0
-                ? this.task.initialTime
-                : [new Date()],
+            initialTime: [new Date()],
             isTracked: true,
             timer,
           },
@@ -81,6 +78,9 @@ export default {
     pauseTime() {
       // Stop circle of updating a timer
       Meteor.clearInterval(this.task.timer);
+      const newTime = Math.floor(
+        (new Date() - this.task.initialTime[0]) / 1000
+      );
 
       // Update the collection to show a timer has been paused
       Meteor.call(
@@ -88,7 +88,7 @@ export default {
         this.task._id,
         {
           ...this.task,
-          // duration: newTime,
+          duration: newTime + this.task.duration,
           isTracked: false,
           timer: null,
         },
@@ -117,7 +117,9 @@ export default {
     initialUpdate() {
       if (this.task.isTracked) {
         this.pauseTime();
+
         this.startTrackTask();
+        console.log((new Date() - this.task.initialTime[0]) / 1000);
       }
     },
   },
