@@ -117,9 +117,7 @@ export default {
     initialUpdate() {
       if (this.task.isTracked) {
         this.pauseTime();
-
         this.startTrackTask();
-        console.log((new Date() - this.task.initialTime[0]) / 1000);
       }
     },
   },
