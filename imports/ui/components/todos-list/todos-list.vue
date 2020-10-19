@@ -80,6 +80,10 @@ export default {
     },
   },
   meteor: {
+    $subscribe: {
+      allTasks: [],
+    },
+
     // Get tasks from Mongo db and sort them
     tasks() {
       return Tasks.find({ isDone: false }).fetch();

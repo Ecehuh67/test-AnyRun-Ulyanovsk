@@ -3,17 +3,11 @@ import { Mongo } from 'meteor/mongo';
 
 export const Tasks = new Mongo.Collection('tasks');
 
-export const getTask = (task) => {
-  return Tasks.find(task._id).fetch()[0];
-};
-
-export const checkError = (error, success) => {
-  if (error) {
-    throw new Error('something wrong with server');
-  } else {
-    console.log('db has been changed');
-  }
-};
+if (Meteor.isServer) {
+  Meteor.publish('allTasks', function () {
+    return Tasks.find({});
+  });
+}
 
 Meteor.methods({
   createTask(task) {
@@ -29,3 +23,15 @@ Meteor.methods({
     Tasks.update(taskId, obj);
   },
 });
+
+export const getTask = (task) => {
+  return Tasks.find(task._id).fetch()[0];
+};
+
+export const checkError = (error, success) => {
+  if (error) {
+    throw new Error('something wrong with server');
+  } else {
+    console.log('db has been changed');
+  }
+};
